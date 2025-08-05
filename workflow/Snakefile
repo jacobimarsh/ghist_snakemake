@@ -1,6 +1,7 @@
 # pyright: reportMissingImports=false, reportUndefinedVariable=false, reportSyntaxError=false
 
-workdir: "/Users/jmarsh96/Desktop/Bcalc/ghist/snakemake_sandbox"
+workdir: "/Users/jmarsh96/Desktop/Bcalc/ghist/snakemake_sandbox" 
+# OR snakemake -d /Users/jmarsh96/Desktop/Bcalc/ghist/snakemake_sandbox
 
 N_REPS = 3
 REPS = list(range(1, N_REPS + 1))
