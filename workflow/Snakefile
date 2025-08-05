@@ -1,11 +1,41 @@
+# pyright: reportMissingImports=false, reportUndefinedVariable=false, reportSyntaxError=false
+
+workdir: "/Users/jmarsh96/Desktop/Bcalc/ghist/snakemake_sandbox"
+
 from snakemake.utils import min_version
-
 min_version("8.0")
-
 
 include: "rules/common.smk"
 
-
 rule all:
     input:
-        [],
+        "folded.sf2"
+
+rule setup_sfs:
+    input:
+        "testing.vcf.gz"
+    output:
+        "folded.sf2"
+    shell:
+        r"""
+        bcftools query -f '%POS\t[%GT\t]\n' {input} |
+          awk 'BEGIN {{ print "positions\tx\tn\tfolded" }}
+          {{
+               pos = $1;
+               n_called = 0;
+               n_allele0 = 0;
+               n_allele1 = 0;
+               for (i=2; i<=NF; i++) {{
+                   split($i, alleles, "[/|]");
+                   if (alleles[1]!="." && alleles[2]!=".") {{
+                       n_called += 2;
+                       if (alleles[1]=="0") n_allele0++;
+                       else if (alleles[1]=="1") n_allele1++;
+                       if (alleles[2]=="0") n_allele0++;
+                       else if (alleles[2]=="1") n_allele1++;
+                   }}
+               }}
+               maf = (n_allele0 < n_allele1 ? n_allele0 : n_allele1);
+               print pos, maf, n_called, 1;
+           }}' > {output}
+        """
