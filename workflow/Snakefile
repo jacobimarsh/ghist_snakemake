@@ -12,8 +12,7 @@ include: "rules/common.smk"
 
 rule all:
     input:
-        expand("folded_{rep}.sf2", rep=REPS),
-        
+        expand("rep_sq_folded_{rep}.sf2", rep=REPS),
 
 rule setup_sfs:
     input:
@@ -42,4 +41,16 @@ rule setup_sfs:
                maf = (n_allele0 < n_allele1 ? n_allele0 : n_allele1);
                print pos, maf, n_called, 1;
            }}' > {output}
+        """
+
+rule rep_sq:
+    input: 
+        "folded_{rep}.sf2"
+    output:
+        "rep_sq_folded_{rep}.sf2"
+    shell:
+        r"""
+        # copy the SF2 contents, then append rep^2
+        cat {input} > {output}
+        echo $(( {wildcards.rep} * {wildcards.rep} )) >> {output}
         """
