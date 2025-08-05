@@ -2,6 +2,9 @@
 
 workdir: "/Users/jmarsh96/Desktop/Bcalc/ghist/snakemake_sandbox"
 
+N_REPS = 3
+REPS = list(range(1, N_REPS + 1))
+
 from snakemake.utils import min_version
 min_version("8.0")
 
@@ -9,13 +12,14 @@ include: "rules/common.smk"
 
 rule all:
     input:
-        "folded.sf2"
+        expand("folded_{rep}.sf2", rep=REPS),
+        
 
 rule setup_sfs:
     input:
         "testing.vcf.gz"
     output:
-        "folded.sf2"
+        "folded_{rep}.sf2"
     shell:
         r"""
         bcftools query -f '%POS\t[%GT\t]\n' {input} |
